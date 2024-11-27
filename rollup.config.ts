@@ -33,21 +33,21 @@ const config = defineConfig([
     output: [
       {
         format: "esm",
-        file: path.resolve(__dirname, "dist/bikram-sambat.esm.js"),
+        file: path.resolve(__dirname, "dist/nepali-number.esm.js"),
       },
       {
         format: "cjs",
-        file: path.resolve(__dirname, "dist/bikram-sambat.cjs.js"),
+        file: path.resolve(__dirname, "dist/nepali-number.cjs.js"),
       },
       {
         format: "umd",
         name: "BikramSambat", // the global variable name
-        file: path.resolve(__dirname, "dist/bikram-sambat.umd.js"),
+        file: path.resolve(__dirname, "dist/nepali-number.umd.js"),
       },
       {
         format: "iife",
         name: "BikramSambat", // the global variable name
-        file: path.resolve(__dirname, "dist/bikram-sambat.iife.js"),
+        file: path.resolve(__dirname, "dist/nepali-number.iife.js"),
       },
     ],
   },
@@ -64,12 +64,12 @@ const config = defineConfig([
     output: [
       {
         format: "esm",
-        file: path.resolve(__dirname, "dist/bikram-sambat.d.ts"),
+        file: path.resolve(__dirname, "dist/nepali-number.d.ts"),
         sourcemap: false,
       },
       {
         format: "cjs",
-        file: path.resolve(__dirname, "dist/bikram-sambat.d.cts"),
+        file: path.resolve(__dirname, "dist/nepali-number.d.cts"),
         sourcemap: false,
       },
     ],

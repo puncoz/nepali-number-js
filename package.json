@@ -24,23 +24,23 @@
     "url": "https://puncoz.com/",
     "email": "info@puncoz.com"
   },
+  "types": "./dist/nepali-number.d.ts",
   "main": "./dist/nepali-number.cjs.js",
   "module": "./dist/nepali-number.esm.js",
-  "types": "./dist/nepali-number.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/nepali-number.d.ts",
       "require": "./dist/nepali-number.cjs.js",
       "import": "./dist/nepali-number.esm.js",
-      "types": "./dist/nepali-number.d.ts",
       "default": "./dist/nepali-number.umd.js"
     },
     "./iife": {
-      "import": "./dist/nepali-number.iife.js",
-      "types": "./dist/nepali-number.d.ts"
+      "types": "./dist/nepali-number.d.ts",
+      "import": "./dist/nepali-number.iife.js"
     },
     "./cjs": {
-      "require": "./dist/nepali-number.cjs.js",
-      "types": "./dist/nepali-number.d.cts"
+      "types": "./dist/nepali-number.d.cts",
+      "require": "./dist/nepali-number.cjs.js"
     }
   },
   "files": [
@@ -57,7 +57,7 @@
     "postinstall": "husky",
     "prepack": "pinst --disable",
     "postpack": "pinst --disable",
-    "clean": "del dist .rollup.cache debug",
+    "clean": "del dist dist-tsup .rollup.cache debug",
     "clean:fresh": "yarn clean && del node_modules yarn.lock",
     "lint": "eslint --flag unstable_ts_config",
     "encode": "tsx ./src/encode.ts",
