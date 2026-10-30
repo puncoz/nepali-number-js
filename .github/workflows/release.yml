@@ -1,0 +1,47 @@
+name: Release
+
+# Triggers only after CI succeeds on a release-tracked branch
+# Using workflow_run ensures we never release code that hasn't passed CI,
+# and the [skip ci] commit that we push back won't trigger a second release
+# because it never triggers a CI run (GitHub skips it), so no workflow_run
+# event is emitted for that commit.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main, beta, alpha]
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false # Don't cancel in-progress releases, but still prevent multiple releases from running concurrently for the same branch
+
+permissions:
+  contents: write # Needed to push the commit with the new version back to the repo (push commit + tag, create GitHub release)
+
+jobs:
+  release:
+    name: Release on ${{ github.event.workflow_run.head_branch }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub Actions, no need to set up manually
+        run: bun run release
