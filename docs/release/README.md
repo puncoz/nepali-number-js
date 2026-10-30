@@ -1,0 +1,18 @@
+# Release
+
+How versions are numbered, what CI checks, and how a release reaches npm.
+
+> **Living snapshots.** Edit in place so each file describes the process as it is right now. No
+> revision tables, no "previously X, now Y" — delete what is no longer true
+> ([ADR-0002](../adr/ADR-0002-living-design-documentation.md)).
+
+## Documents
+
+| Document | Answers |
+|---|---|
+| [`versioning.md`](versioning.md) | Is this change a patch, a minor or a major? |
+| [`releasing.md`](releasing.md) | What CI runs, how the release workflow publishes, and its current gaps |
+
+Agents never bump the version, tag, or publish ([`AGENTS.md`](../../AGENTS.md) §3). They
+propose a Conventional Commit message whose prefix matches the semver impact; the owner commits
+and merges, and the release workflow does the rest.

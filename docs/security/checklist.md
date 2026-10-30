@@ -1,0 +1,43 @@
+# Release security checklist
+
+- **Status:** Current
+- **Last updated:** 2026-10-30
+- **Related ADRs:** [ADR-0005](../adr/ADR-0005-security-as-a-standing-practice.md)
+
+> Snapshot of the audit as it stands today. Edit in place; never record what changed.
+
+Runs **before each release**. Findings are reported as: what it is · where it is · how it would
+be exploited · the fix.
+
+## Package contents
+
+- [ ] `dependencies` and `peerDependencies` in `package.json` are empty.
+- [ ] `npm pack --dry-run` lists only `dist/nepali-number.{js,cjs,umd.js,iife.js,d.ts,d.cts}`,
+      `package.json`, `README.md`, `LICENSE`.
+- [ ] No `prepare`, `preinstall`, `install` or `postinstall` script in `package.json`.
+- [ ] `dist/` was built in CI from the tagged commit, not copied from a local machine.
+
+## Source
+
+- [ ] `grep -rnE "process|window|document|globalThis|Buffer|require\(|fetch\(|eval|Function\(" src --include='*.ts' --exclude='*.test.ts'`
+      finds nothing.
+- [ ] `grep -rn "console\." src --include='*.ts' --exclude='*.test.ts'` finds nothing.
+- [ ] Every regular expression added since the last release is listed and assessed in
+      [`threat-model.md`](threat-model.md#regular-expressions-in-src), and the hostile-input
+      timings there are re-measured.
+
+## Dependencies and tooling
+
+- [ ] `bun.lock` changes since the last release are reviewed; any new package has an ADR.
+- [ ] No dev dependency runs an install script that is not understood.
+
+## CI and release
+
+- [ ] Workflows declare only the `permissions:` they need.
+- [ ] The release job runs only after a **successful** CI run, on the commit CI tested.
+- [ ] Secrets match [`secrets.md`](secrets.md); nothing is echoed.
+
+## Account hygiene (owner)
+
+- [ ] npm account has two-factor authentication on for publishing.
+- [ ] Any npm token in use is granular, scoped to this package, and has an expiry.

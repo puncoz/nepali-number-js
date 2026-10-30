@@ -8,514 +8,208 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/puncoz)](https://x.com/puncoz)
 
-A comprehensive TypeScript/JavaScript library for converting, formatting, and working with numbers in Nepali (Devanagari) script. This package provides seamless conversion between English and Nepali digits, number formatting with Nepali locale support, number-to-words conversion, currency formatting, and various utility functions.
+> Convert, format and spell out numbers in Nepali (Devanagari) — digits, lakh/crore grouping,
+> words, ordinals and Nepali Rupees. Zero dependencies, fully typed, runs everywhere.
+
+```ts
+import { toNepali, formatNepaliNumber, toNepaliWords, toNepaliCurrency } from "nepali-number"
+
+toNepali(2081)                    // → "२०८१"
+formatNepaliNumber(1234567)       // → "१२,३४,५६७"
+toNepaliWords(1234567)            // → "बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी"
+toNepaliCurrency(1234567.89)      // → "रू १२,३४,५६७.८९"
+```
+
+> **Version note.** This README describes **v2** (`package.json` 2.0.0). npm's `latest` is
+> still **1.0.3**, whose API is different — run `npm view nepali-number version` to check.
+> Moving from v1? See the [migration guide](docs/guides/migration-v1-to-v2.md).
 
 ## Features
 
-- 🔄 **Bidirectional Conversion**: Convert between English (0-9) and Nepali (०-९) digits
-- 📊 **Nepali Number Formatting**: Format numbers using the Nepali numbering system (lakh/crore)
-- 📝 **Number to Words**: Convert numbers to words in both Nepali and English
-- 💰 **Currency Support**: Format currency amounts in Nepali rupees with word conversion
-- 🔧 **Utility Functions**: Validation, detection, and manipulation of Nepali numbers
-- 📱 **Cross-platform**: Works in browsers, Node.js, and other JavaScript environments
-- 🎯 **TypeScript Support**: Full TypeScript definitions included
-- 🌐 **Unicode Compliant**: Proper Unicode support for Devanagari script
-
-## Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [API Documentation](#api-documentation)
-    - [Conversion Functions](#conversion-functions)
-        - [`toNepali()`](#tonepaliinput-string--number-string)
-        - [`toEnglish()`](#toenglishinput-string--number-string)
-        - [`parseNepaliNumber()`](#parsenepalinumbernepalinumber-string-number)
-        - [`convert()`](#converttext-string-tonepalinumber-boolean-string)
-    - [Formatting Functions](#formatting-functions)
-        - [`formatNepaliNumber()`](#formatnepalinumbernumber-number--string-options-formatoptions-string)
-        - [`addNepaliCommas()`](#addnepalicommasnumber-string--number-string)
-        - [`removeFormatting()`](#removeformattingformattedstring-string--number-number)
-    - [Words Conversion](#words-conversion)
-        - [`toNepaliWords()`](#tonepaliwordsnumber-number--string-string)
-        - [`toEnglishWords()`](#toenglishwordsnumber-number--string-string)
-        - [`toNepaliOrdinal()`](#tonepaliordinalnumber-number--string-string)
-        - [`toDecimalWord()`](#todecimalwordnumber-number--string-string)
-    - [Currency Functions](#currency-functions)
-        - [`toNepaliCurrency()`](#tonepalicurrencyamount-number--string-options-currencyoptions-string)
-        - [`toNepaliCurrencyWords()`](#tonepalicurrencywordsamount-number--string-string)
-    - [Utility Functions](#utility-functions)
-        - [`padZeros()`](#padzerosnumber-number--string-length-number-string)
-        - [`roundNepali()`](#roundnepalinumber-number--string-decimals-number-string)
-        - [`isNepaliDigit()`](#isnepalidigitchar-string-boolean)
-        - [`isEnglishDigit()`](#isenglishdigitchar-string-boolean)
-        - [`isMixedNumber()`](#ismixednumberinput-string-boolean)
-        - [`detectNumberSystem()`](#detectnumbersysteminput-string-numbersystem--typeof-nan)
-        - [`validateNepaliNumber()`](#validatenepalinumberinput-string-boolean)
-        - [`normalize()`](#normalizeinput-string-string)
-- [TypeScript Support](#typescript-support)
-- [Browser Support](#browser-support)
-- [Examples](#examples)
-    - [Complete Number Processing](#complete-number-processing)
-    - [Working with Mixed Content](#working-with-mixed-content)
-- [Contributing](#contributing)
-    - [Development Setup](#development-setup)
-    - [Running Tests](#running-tests)
-- [License](#license)
-- [Author](#author)
-- [Support](#support)
-- [Related Packages](#related-packages)
+- **Digits both ways** — `0-9` ⇄ `०-९`, in plain numbers or inside any text.
+- **Nepali grouping** — `1,23,45,678`, with precision and trailing-zero control.
+- **Words** — Nepali cardinals (`एक सय तेईस`), English words with Nepali scales
+  (`twelve lakh …`), Nepali ordinals (`पहिलो`, `पाँचौं`), and short forms (`१२ लाख`).
+- **Currency** — `रू १२,३४,५६७.८९` and `… रुपैयाँ … पैसा`.
+- **Utilities** — normalise typed input, detect and validate digit systems, pad, round.
+- **Any digits in** — every function reads English, Nepali or mixed digits.
+- **Zero dependencies**, ~2.8 kB gzipped, tree-shakeable named exports.
+- **Everywhere** — ESM, CommonJS, UMD and IIFE builds with TypeScript declarations; Node.js,
+  Bun, Deno, bundlers, browsers, workers and edge runtimes.
+- **Never throws** for its declared input types — invalid input returns a documented default.
 
 ## Installation
 
-Using `npm`:
-
 ```bash
 npm install nepali-number
-```
-
-or, using `yarn`:
-
-```bash
-yarn add nepali-number
-```
-
-or, using `pnpm`:
-
-```bash
+# or
 pnpm add nepali-number
-```
-
-or, using `bun`:
-
-```bash
+yarn add nepali-number
 bun add nepali-number
 ```
 
-## Quick Start
+## Usage
 
-```javascript
-import { toNepali, toEnglish, formatNepaliNumber, toNepaliWords } from 'nepali-number'
+```js
+// ES modules (Node, Bun, Vite, webpack, esbuild…)
+import { toNepali } from "nepali-number"
 
-// Convert digits
-console.log(toNepali(123))        // "१२३"
-console.log(toEnglish("१२३"))     // "123"
+// CommonJS
+const { toNepali } = require("nepali-number")
 
-// Format numbers
-console.log(formatNepaliNumber(1234567))  // "१२,३४,५६७"
-
-// Convert to words
-console.log(toNepaliWords(123))   // "एक सय तेईस"
+// Deno
+import { toNepali } from "npm:nepali-number"
 ```
 
-## API Documentation
-
-### Conversion Functions
-
-#### `toNepali(input: string | number): string`
-
-Converts English digits (0-9) to Nepali digits (०-९).
-
-```javascript
-import { toNepali } from 'nepali-number'
-
-toNepali(123)           // "१२३"
-toNepali("456.78")      // "४५६.७८"
-toNepali("Rs 1000")     // "Rs १०००"
-toNepali(-42)           // "-४२"
-```
-
-#### `toEnglish(input: string | number): string`
-
-Converts Nepali digits (०-९) to English digits (0-9).
-
-```javascript
-import { toEnglish } from 'nepali-number'
-
-toEnglish("१२३")        // "123"
-toEnglish("४५६.७८")    // "456.78"
-toEnglish("रू १०००")    // "रू 1000"
-```
-
-#### `parseNepaliNumber(nepaliNumber: string): number`
-
-Parses a Nepali number string to a JavaScript number.
-
-```javascript
-import { parseNepaliNumber } from 'nepali-number'
-
-parseNepaliNumber("१२३")      // 123
-parseNepaliNumber("४५६.७८")  // 456.78
-parseNepaliNumber("१,२३,४५६") // 123456
-```
-
-#### `convert(text: string, toNepaliNumber?: boolean): string`
-
-Converts mixed content while preserving non-numeric text.
-
-```javascript
-import { convert } from 'nepali-number'
-
-convert("Price: 123 USD", true)   // "Price: १२३ USD"
-convert("मूल्य: १२३ USD", false)   // "मूल्य: 123 USD"
-```
-
-### Formatting Functions
-
-#### `formatNepaliNumber(number: number | string, options?: FormatOptions): string`
-
-Formats numbers with Nepali digits and locale-specific formatting.
-
-```javascript
-import { formatNepaliNumber } from 'nepali-number'
-
-formatNepaliNumber(1234567)
-// "१२,३४,५६७"
-
-formatNepaliNumber(1234567.89, {
-  useNepaliDigits: true,
-  addCommas: true,
-  precision: 2,
-  trimZero: false
-})
-// "१२,३४,५६७.८९"
-```
-
-**FormatOptions:**
-
-- `useNepaliDigits?: boolean` - Use Nepali digits (default: true)
-- `addCommas?: boolean` - Add comma separators (default: true)
-- `precision?: number` - Decimal precision (default: 2)
-- `trimZero?: boolean` - Remove trailing zeros (default: true)
-
-#### `addNepaliCommas(number: string | number): string`
-
-Adds commas in Nepali (Indian) number format using the lakh/crore system.
-
-```javascript
-import { addNepaliCommas } from 'nepali-number'
-
-addNepaliCommas(1234567)     // "12,34,567"
-addNepaliCommas(12345678)    // "1,23,45,678"
-```
-
-#### `removeFormatting(formattedString: string | number): number`
-
-Removes formatting to get the raw number.
-
-```javascript
-import { removeFormatting } from 'nepali-number'
-
-removeFormatting("१२,३४,५६७")  // 1234567
-removeFormatting("रू १,२३४")   // 1234
-```
-
-### Words Conversion
-
-#### `toNepaliWords(number: number | string): string`
-
-Converts numbers to Nepali words.
-
-```javascript
-import { toNepaliWords } from 'nepali-number'
-
-toNepaliWords(123)        // "एक सय तेईस"
-toNepaliWords(1000)       // "एक हजार"
-toNepaliWords(100000)     // "एक लाख"
-toNepaliWords(10000000)   // "एक करोड"
-```
-
-#### `toEnglishWords(number: number | string): string`
-
-Converts numbers to English words using Nepali numbering system.
-
-```javascript
-import { toEnglishWords } from 'nepali-number'
-
-toEnglishWords(123)       // "one hundred twenty three"
-toEnglishWords(100000)    // "one lakh"
-toEnglishWords(10000000)  // "one crore"
-```
-
-#### `toNepaliOrdinal(number: number | string): string`
-
-Converts numbers to Nepali ordinal words.
-
-```javascript
-import { toNepaliOrdinal } from 'nepali-number'
-
-toNepaliOrdinal(1)   // "पहिलो"
-toNepaliOrdinal(2)   // "दोस्रो"
-toNepaliOrdinal(3)   // "तेस्रो"
-toNepaliOrdinal(21)  // "एक्काईसौं"
-```
-
-#### `toDecimalWord(number: number | string): string`
-
-Converts numbers to decimal word format.
-
-```javascript
-import { toDecimalWord } from 'nepali-number'
-
-toDecimalWord(150000)     // "१.५ लाख"
-toDecimalWord(2500000)    // "२५ लाख"
-toDecimalWord(15000000)   // "१.५ करोड"
-```
-
-### Currency Functions
-
-#### `toNepaliCurrency(amount: number | string, options?: CurrencyOptions): string`
-
-Formats currency amounts in Nepali rupees.
-
-```javascript
-import { toNepaliCurrency } from 'nepali-number'
-
-toNepaliCurrency(1234.56)
-// "रू १,२३४.५६"
-
-toNepaliCurrency(1000, {
-  useNepaliDigits: true,
-  showPaisa: false,
-  currencySymbol: "रू",
-  precision: 2
-})
-// "रू १,०००"
-```
-
-**CurrencyOptions:**
-
-- `useNepaliDigits?: boolean` - Use Nepali digits (default: true)
-- `showPaisa?: boolean` - Show paisa/cents (default: true)
-- `currencySymbol?: string` - Currency symbol (default: "रू")
-- `precision?: number` - Decimal precision (default: 2)
-
-#### `toNepaliCurrencyWords(amount: number | string): string`
-
-Converts currency amounts to Nepali words.
-
-```javascript
-import { toNepaliCurrencyWords } from 'nepali-number'
-
-toNepaliCurrencyWords(1234.56)
-// "एक हजार दुई सय चौंतीस रुपैयाँ छपन्न पैसा"
-
-toNepaliCurrencyWords(1000)
-// "एक हजार रुपैयाँ"
-```
-
-### Utility Functions
-
-#### `padZeros(number: number | string, length: number): string`
-
-Pads numbers with Nepali zeros.
-
-```javascript
-import { padZeros } from 'nepali-number'
-
-padZeros(42, 5)      // "०००४२"
-padZeros("123", 6)   // "०००१२३"
-```
-
-#### `roundNepali(number: number | string, decimals?: number): string`
-
-Rounds and formats numbers with Nepali digits.
-
-```javascript
-import { roundNepali } from 'nepali-number'
-
-roundNepali(123.456, 2)   // "१२३.४६"
-roundNepali(123.456, 0)   // "१२३"
-```
-
-#### `isNepaliDigit(char: string): boolean`
-
-Checks if a character is a Nepali digit.
-
-```javascript
-import { isNepaliDigit } from 'nepali-number'
-
-isNepaliDigit("५")   // true
-isNepaliDigit("5")   // false
-isNepaliDigit("a")   // false
-```
-
-#### `isEnglishDigit(char: string): boolean`
-
-Checks if a character is an English digit.
-
-```javascript
-import { isEnglishDigit } from 'nepali-number'
-
-isEnglishDigit("5")   // true
-isEnglishDigit("५")   // false
-isEnglishDigit("a")   // false
-```
-
-#### `isMixedNumber(input: string): boolean`
-
-Checks if input contains both English and Nepali digits.
-
-```javascript
-import { isMixedNumber } from 'nepali-number'
-
-isMixedNumber("12३४")   // true
-isMixedNumber("1234")   // false
-isMixedNumber("१२३४")   // false
-```
-
-#### `detectNumberSystem(input: string): NumberSystem | typeof NaN`
-
-Detects the number system used in the input.
-
-```javascript
-import { detectNumberSystem } from 'nepali-number'
-
-detectNumberSystem("1234")    // "english"
-detectNumberSystem("१२३४")    // "nepali"
-detectNumberSystem("12३४")    // "mixed"
-detectNumberSystem("abcd")    // NaN
-```
-
-#### `validateNepaliNumber(input: string): boolean`
-
-Validates if the input is a valid Nepali number.
-
-```javascript
-import { validateNepaliNumber } from 'nepali-number'
-
-validateNepaliNumber("१२३.४५")   // true
-validateNepaliNumber("१२३.४५.६") // false (multiple decimals)
-validateNepaliNumber("१२३abc")   // false (contains letters)
-```
-
-#### `normalize(input: string): string`
-
-Normalizes input by removing extra spaces and formatting.
-
-```javascript
-import { normalize } from 'nepali-number'
-
-normalize("  १२३  ४५६  ")     // "१२३४५६"
-normalize("१२३,,४५६")         // "१२३,४५६"
-normalize("१२३..४५६")         // "१२३.४५६"
-```
-
-## TypeScript Support
-
-This package is written in TypeScript and includes full type definitions. All functions are properly typed for better development experience.
-
-```typescript
-import { 
-  toNepali, 
-  FormatOptions, 
-  CurrencyOptions, 
-  NumberSystem 
-} from 'nepali-number'
-
-const options: FormatOptions = {
-  useNepaliDigits: true,
-  addCommas: true,
-  precision: 2
-}
-
-const result: string = toNepali(123)
-```
-
-## Browser Support
-
-This package works in all modern browsers and supports:
-
-- ES6 modules
-- CommonJS
-- UMD builds
-- IIFE builds for direct browser usage
+In the browser without a build step, the IIFE build exposes a global **`nepaliNumber`**:
 
 ```html
-<!-- Direct browser usage -->
-<script src="https://unpkg.com/nepali-number/dist/nepali-number.iife.js"></script>
+<script src="https://unpkg.com/nepali-number@2/dist/nepali-number.iife.js"></script>
 <script>
-  console.log(NepaliNumber.toNepali(123)) // "१२३"
+  nepaliNumber.toNepali(123)   // "१२३"
 </script>
 ```
 
-## Examples
+TypeScript declarations are included — no `@types` package needed. Details for every
+environment: [**Getting started**](docs/guides/getting-started.md).
 
-### Complete Number Processing
+## API at a glance
 
-```javascript
-import { 
-  toNepali, 
-  formatNepaliNumber, 
-  toNepaliWords, 
-  toNepaliCurrency,
-  toNepaliCurrencyWords 
-} from 'nepali-number'
+Every export is a named, pure function. Full reference with options, defaults and edge cases:
+[**docs/api**](docs/api/README.md).
 
-const amount = 1234567.89
+### Conversion
 
-console.log('Original:', amount)
-console.log('Nepali Digits:', toNepali(amount))
-console.log('Formatted:', formatNepaliNumber(amount))
-console.log('In Words:', toNepaliWords(amount))
-console.log('Currency:', toNepaliCurrency(amount))
-console.log('Currency Words:', toNepaliCurrencyWords(amount))
+| Function | Example |
+|---|---|
+| [`toNepali(input)`](docs/api/conversion.md#tonepaliinput) | `toNepali("Room 12B")` → `"Room १२B"` |
+| [`toEnglish(input)`](docs/api/conversion.md#toenglishinput) | `toEnglish("रू १,२३४")` → `"रू 1,234"` |
+| [`parseNepaliNumber(str)`](docs/api/conversion.md#parsenepalinumbernepalinumber) | `parseNepaliNumber("१२,३४५.६७")` → `12345.67` |
+| [`convert(text, toNepali = true)`](docs/api/conversion.md#converttext-tonepalinumber) | `convert("मेरो उमेर २५ वर्ष", false)` → `"मेरो उमेर 25 वर्ष"` |
 
-// Output:
-// Original: 1234567.89
-// Nepali Digits: १२३४५६७.८९
-// Formatted: १२,३४,५६७.८९
-// In Words: बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी
-// Currency: रू १२,३४,५६७.८९
-// Currency Words: बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी रुपैयाँ उनासी पैसा
+### Formatting
+
+| Function | Example |
+|---|---|
+| [`formatNepaliNumber(n, options?)`](docs/api/formatting.md#formatnepalinumbernumber-options) | `formatNepaliNumber(1234567.891)` → `"१२,३४,५६७.८९"` |
+| [`addNepaliCommas(n)`](docs/api/formatting.md#addnepalicommasnumber) | `addNepaliCommas(12345678)` → `"1,23,45,678"` |
+| [`removeFormatting(str)`](docs/api/formatting.md#removeformattingformattedstring) | `removeFormatting("रू १२,३४,५६७.८९")` → `1234567.89` |
+
+`formatNepaliNumber` options: `useNepaliDigits` (default `true`), `addCommas` (`true`),
+`precision` (`2`), `trimZero` (`true` — drops an all-zero decimal part).
+
+```ts
+formatNepaliNumber(1234567, { useNepaliDigits: false })   // → "12,34,567"
+formatNepaliNumber(1234.567, { precision: 0 })            // → "१,२३५"
+formatNepaliNumber(0, { trimZero: false })                // → "०.००"
 ```
 
-### Working with Mixed Content
+### Words
 
-```javascript
-import { convert, parseNepaliNumber } from 'nepali-number'
+| Function | Example |
+|---|---|
+| [`toNepaliWords(n)`](docs/api/words.md#tonepaliwordsnumber) | `toNepaliWords(123)` → `"एक सय तेईस"` |
+| [`toEnglishWords(n)`](docs/api/words.md#toenglishwordsnumber) | `toEnglishWords(12345678)` → `"one crore twenty three lakh forty five thousand six hundred seventy eight"` |
+| [`toNepaliOrdinal(n)`](docs/api/words.md#tonepaliordinalnumber) | `toNepaliOrdinal(1)` → `"पहिलो"`, `toNepaliOrdinal(5)` → `"पाँचौं"` |
+| [`toDecimalWord(n)`](docs/api/words.md#todecimalwordnumber) | `toDecimalWord(1200000)` → `"१२ लाख"`, `toDecimalWord(25000000)` → `"२.५० करोड"` |
 
-const nepaliText = "मेरो उमेर २५ वर्ष छ र मेरो तलब रू ५०,०००"
-const englishText = convert(nepaliText, false)
-console.log(englishText) // "मेरो उमेर 25 वर्ष छ र मेरो तलब रू 50,000"
+### Currency
 
-// Extract and parse numbers
-const salary = parseNepaliNumber("५०,०००")
-console.log(salary) // 50000
+| Function | Example |
+|---|---|
+| [`toNepaliCurrency(n, options?)`](docs/api/currency.md#tonepalicurrencyamount-options) | `toNepaliCurrency(1234567.89)` → `"रू १२,३४,५६७.८९"` |
+| [`toNepaliCurrencyWords(n)`](docs/api/currency.md#tonepalicurrencywordsamount) | `toNepaliCurrencyWords(1234567.89)` → `"बाह्र लाख चौंतीस हजार पाँच सय सतसट्ठी रुपैयाँ उनान्नब्बे पैसा"` |
+
+`toNepaliCurrency` options: `useNepaliDigits` (`true`), `showPaisa` (`true`),
+`currencySymbol` (`"रू"`), `precision` (`2`).
+
+```ts
+toNepaliCurrency(1234567.89, { showPaisa: false })                          // → "रू १२,३४,५६८"
+toNepaliCurrency(1234, { useNepaliDigits: false, currencySymbol: "Rs." })   // → "Rs. 1,234.00"
 ```
+
+### Utilities
+
+| Function | Example |
+|---|---|
+| [`normalize(str)`](docs/api/utils.md#normalizeinput) | `normalize("  १२३  ४५६  ")` → `"१२३४५६"` |
+| [`detectNumberSystem(str)`](docs/api/utils.md#detectnumbersysteminput) | `"1234"` → `"english"`, `"१२३४"` → `"nepali"`, `"12३४"` → `"mixed"`, `"abcd"` → `NaN` |
+| [`validateNepaliNumber(str)`](docs/api/utils.md#validatenepalinumberinput) | `"१२३.४५"` → `true`, `"१२३.४५.६"` → `false` |
+| [`isNepaliDigit(char)`](docs/api/utils.md#isnepalidigitchar) | `"५"` → `true` |
+| [`isEnglishDigit(char)`](docs/api/utils.md#isenglishdigitchar) | `"5"` → `true` |
+| [`isMixedNumber(str)`](docs/api/utils.md#ismixednumberinput) | `"12३४"` → `true` |
+| [`padZeros(n, length)`](docs/api/utils.md#padzerosnumber-length) | `padZeros(42, 5)` → `"०००४२"` |
+| [`roundNepali(n, decimals = 2)`](docs/api/utils.md#roundnepalinumber-decimals) | `roundNepali(3.14159)` → `"३.१४"` |
+
+## Good to know
+
+A few behaviours surprise people. The full list, with a workaround for each, is in
+[**limitations**](docs/api/limitations.md).
+
+- **Strip commas before formatting a string** — `formatNepaliNumber("1,234")` → `"१"`; use
+  `formatNepaliNumber(removeFormatting("1,234"))` → `"१,२३४"`.
+- **Words need integers** — `toNepaliWords(12.5)` → `""`. For money use
+  `toNepaliCurrencyWords(12.5)` → `"बाह्र रुपैयाँ पचास पैसा"`.
+- **Invalid input reads as zero** — `toNepaliWords("abc")` → `"शून्य"`. Validate first when the
+  difference matters.
+- **Option types aren't exported yet** — derive them:
+  `type FormatOptions = NonNullable<Parameters<typeof formatNepaliNumber>[1]>`
+  ([types](docs/api/types.md)).
+
+## Documentation
+
+| | |
+|---|---|
+| [Getting started](docs/guides/getting-started.md) | Install and import in Node, Bun, Deno, bundlers, TypeScript, the browser |
+| [Recipes](docs/guides/recipes.md) | Reading typed input, displaying amounts, cheques in words, React and Vue helpers |
+| [API reference](docs/api/README.md) | Every export: signature, options, defaults, outputs |
+| [Limitations](docs/api/limitations.md) | Edge cases and workarounds |
+| [Migrating from v1](docs/guides/migration-v1-to-v2.md) | v1 function → v2 function |
+| [Versioning](docs/release/versioning.md) | What counts as a breaking change |
+| [All documentation](docs/README.md) | The map, including architecture, decisions and security |
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Issues and pull requests are welcome. Read [**`AGENTS.md`**](AGENTS.md) first — it is the
+working agreement for everyone, human or AI.
 
-### Development Setup
+In short: **every feature and functional change starts with an ADR** in
+[`docs/adr/`](docs/adr/README.md) that the owner approves before code is written. Any change a
+consumer can observe — including a changed word or spelling — ships its
+[`docs/api/`](docs/api/README.md) update and a semver decision with it. Tests are part of
+every change. Unclear Nepali-language or rounding questions are asked, not guessed.
 
 ```bash
-# Clone the repository
 git clone https://github.com/puncoz-official/nepali-number-js.git
-
-# Install dependencies
+cd nepali-number-js
 bun install
 
-# Run tests
-bun test
-
-# Build the package
-bun run build
-
-# Development mode with watch
-bun run dev
+bun run type-check   # tsc --noEmit, strict
+bun run test         # bun test, with coverage
+bun run build        # tsdown → dist/ (ESM, CJS, UMD, IIFE, .d.ts)
+bun run dev          # rebuild on change
 ```
 
-### Running Tests
+Requires [Bun](https://bun.sh). CI runs the same three checks on Node.js 20, 22 and 24, then
+packs and installs the tarball as a smoke test.
 
-```bash
-bun test
 ```
+src/
+├── nepali-number.ts   # public entry — re-exports every domain
+├── constants.ts       # digits, words, ordinals, scales
+├── conversion/        # toNepali, toEnglish, parseNepaliNumber, convert
+├── formatting/        # formatNepaliNumber, addNepaliCommas, removeFormatting
+├── words/             # toNepaliWords, toEnglishWords, toNepaliOrdinal, toDecimalWord
+├── currency/          # toNepaliCurrency, toNepaliCurrencyWords
+└── utils/             # normalize, detection, validation, padZeros, roundNepali
+```
+
+**Security issues:** please report privately to <info@puncoz.com> rather than in a public
+issue ([security](docs/security/README.md)).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+[MIT](LICENSE) © Puncoz Nepal
 
 ## Author
 
@@ -526,19 +220,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Website: [https://puncoz.com](https://puncoz.com)
 - Email: <info@puncoz.com>
 
-## Support
+## Related packages
 
-If you find this package helpful, please consider:
-
-- ⭐ Starring the repository
-- 🐛 Reporting bugs
-- 💡 Suggesting new features
-- 🤝 Contributing to the codebase
-
-## Related Packages
-
-- [bikram-sambat-js](https://github.com/puncoz-official/bikram-sambat-js) - Utility library to convert date in AD to Nepali date BS (Bikram sambat) and vice versa.
-- [nepali-datepicker-reactjs](https://github.com/puncoz-official/nepali-datepicker-reactjs) - React component for Nepali date picker (Bikram Sambat)
+- [bikram-sambat-js](https://github.com/puncoz-official/bikram-sambat-js) — convert dates between
+  AD and Nepali BS (Bikram Sambat).
+- [nepali-datepicker-reactjs](https://github.com/puncoz-official/nepali-datepicker-reactjs) — React
+  date picker for Bikram Sambat.
 
 ---
 
