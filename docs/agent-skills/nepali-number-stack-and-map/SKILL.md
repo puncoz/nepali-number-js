@@ -16,12 +16,13 @@ Part of this repository's working agreement (ADR-0011): as binding as `AGENTS.md
 ## Current state (`AGENTS.md` §1)
 
 **Current state:** `package.json` is at `2.0.0`, but npm's `latest` is still **1.0.3** — no
-2.x has been published, and the release workflow cannot publish yet
-([`maintainer-guide/release/releasing.mdx`](../../../docs/docs.nepal-dev.com/content/nepali-number/maintainer-guide/release/releasing.mdx#current-gaps)). 45 functions are exported across eight domains
+2.x has been published. The first release pull request that release-please opens on `main`
+proposes 2.0.0, and merging it publishes
+([`maintainer-guide/release/releasing.mdx`](../../../docs/docs.nepal-dev.com/content/nepali-number/maintainer-guide/release/releasing.mdx)). 45 functions are exported across eight domains
 (conversion, formatting, words, currency, fractions, units, text, utils), with their input, option
 and result types (`NumericInput`, `FormatOptions`, `CurrencyOptions`, `NumberSystem` and the rest
 of `src/*/types.ts`). Every export that reads a number goes through one exact decimal reader,
-`parseDecimal` in `src/conversion/decimal.ts` (ADR-0012). 298 tests pass, 13 of them the check on this working agreement in `src/agent-docs.test.ts` and 11 the check on the files for GitHub in `src/community-files.test.ts`; `bun run type-check`
+`parseDecimal` in `src/conversion/decimal.ts` (ADR-0012). 313 tests pass: 13 of them check this working agreement (`src/agent-docs.test.ts`), 11 the files for GitHub (`src/community-files.test.ts`) and 15 the workflows and release files (`src/workflows.test.ts`); `bun run type-check`
 and `bun run build` are clean. Every function and line is covered. The minified ESM build is
 about 22.1 kB (7.5 kB gzipped).
 
@@ -37,9 +38,9 @@ What is installed **today** (verified from `package.json`, the lockfile and the 
 | Testing | `bun test` with coverage always on and the test root set to `src` (`bunfig.toml`, text + lcov to `coverage/`); tests beside the code as `*.test.ts` |
 | Runtime dependencies | **None**, and none may be added (§6) |
 | Dev dependencies | `typescript`, `tsdown`, `@types/bun`, `del-cli` |
-| Package manager | Bun (1.4.4 locally; CI uses `latest`); `bun.lock` is committed |
-| CI | `.github/workflows/ci.yml`: type-check, test, build on Node 20 / 22 / 24; Codecov upload; pack-and-require smoke test |
-| Release | `.github/workflows/release.yml`: runs `bun run release` after CI passes on `main`, `beta`, `alpha` — see [`maintainer-guide/release/releasing.mdx`](../../../docs/docs.nepal-dev.com/content/nepali-number/maintainer-guide/release/releasing.mdx) for its current gaps |
+| Package manager | Bun **1.4.4**, locally and in CI, from `.bun-version`; it moves by hand with `@types/bun`. `bun.lock` is committed |
+| CI | `.github/workflows/ci.yml`, on pull requests and pushes to `main`: type-check, test, build on Node 20 / 22 / 24; Codecov upload; pack, install, `require` and `import` smoke test. Every action in every workflow is pinned to a commit SHA |
+| Release | `.github/workflows/release.yml`, on a push to `main`: release-please keeps a release pull request with the next version and `CHANGELOG.md`; merging it tags, writes the GitHub release, and the `publish` job checks, builds and publishes to npm by trusted publishing, with no token (ADR-0020). Configured in `release-please-config.json` and `.release-please-manifest.json` — see [`maintainer-guide/release/releasing.mdx`](../../../docs/docs.nepal-dev.com/content/nepali-number/maintainer-guide/release/releasing.mdx) |
 | Code scanning | `.github/workflows/codeql.yml`: CodeQL on the TypeScript and the workflows, on pull requests and pushes to `main` and weekly; actions pinned to commit SHAs (ADR-0019) |
 | Dependency updates | `.github/dependabot.yml`: weekly, grouped, 7-day cooldown, for the dev dependencies and the actions. Minor and patch are approved as a class; a major version, and any `tsdown` 0.x minor, needs its own ADR (ADR-0019) |
 | Linting / formatting | **None installed.** Adopting one is a tooling ADR |
@@ -75,6 +76,7 @@ What is installed **today** (verified from `package.json`, the lockfile and the 
 │   ├── constants.ts       # digits, words, ordinals, scales — all language data
 │   ├── agent-docs.test.ts # checks AGENTS.md, the skills and their links (ADR-0011)
 │   ├── community-files.test.ts # checks the files for GitHub exist, parse and link (ADR-0019)
+│   ├── workflows.test.ts  # checks pinned actions, permissions and the release files (ADR-0020)
 │   ├── conversion/        # toNepali, toEnglish, parseNepaliNumber, convert; NumericInput
 │   │   └── decimal.ts     # internal: the exact decimal reader, rounding, grouping, comparing (ADR-0012)
 │   ├── formatting/        # formatNepaliNumber, addNepaliCommas, formatPercent, removeFormatting
@@ -95,6 +97,9 @@ What is installed **today** (verified from `package.json`, the lockfile and the 
 ├── tsconfig.json          # strict; isolatedDeclarations; @/* → src/*; includes src only
 ├── tsdown.config.ts       # ESM + CJS + IIFE + UMD, global nepaliNumber
 ├── bunfig.toml            # coverage always on; test root src
+├── .bun-version           # the Bun version CI and the release install
+├── release-please-config.json      # how release-please versions and writes the changelog (ADR-0020)
+├── .release-please-manifest.json   # the last released version; written by release-please only
 ├── dist/                  # generated by `bun run build` — git-ignored, never edited
 └── sample/                # reference material from another project — not part of the package
 ```

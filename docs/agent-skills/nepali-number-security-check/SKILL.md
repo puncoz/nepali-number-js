@@ -22,7 +22,7 @@ Part of this repository's working agreement (ADR-0011): as binding as `AGENTS.md
 | Adds or changes a regular expression | No nested or overlapping quantifiers on unbounded input (ReDoS) · tested with a long hostile string (e.g. 100 000 characters) |
 | Adds input parsing | Behaviour on empty, whitespace, huge, `NaN`, `Infinity`, and non-digit input is defined, tested and documented |
 | Touches `package.json` `files`, `exports` or scripts | `npm pack --dry-run` lists only `dist/`, `package.json`, `README.md`, `LICENSE` · no `prepare`/`postinstall` scripts that run on consumers' machines |
-| Touches CI or release workflows | Least-privilege `permissions:` · third-party actions pinned to a major or SHA · secrets never echoed · release runs only after CI passes |
+| Touches CI or release workflows | Least-privilege `permissions:` · every action pinned to a commit SHA · no `pull_request_target` · secrets never echoed · `id-token: write` only on the `publish` job of `release.yml` · the publish step stays in `release.yml`, after the checks (ADR-0020) |
 | Adds logging or errors | Nothing in `src/` logs. No `console.*` in library code |
 
 ## Full audits at gates

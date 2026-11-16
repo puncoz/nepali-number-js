@@ -19,7 +19,7 @@ the rest of that section.
 read from its path in §11.
 
 > **Status.** The working agreement is set out in ADR-0001 to ADR-0011, all **Approved** by the
-> owner on 2026-11-14, and ADR-0019, approved on 2026-11-15. Where two of them disagree, the
+> owner on 2026-11-14, and ADR-0019 and ADR-0020, approved on 2026-11-15. Where two of them disagree, the
 > newer one holds.
 
 ## 1. What this project is
@@ -95,8 +95,10 @@ Unclear which side the change falls on? It needs an ADR.
   whole set and commits by hand. Reading git state (`status`, `diff`, `log`) is fine. When work
   is done, **propose** a Conventional Commit message (§5) for the owner to use.
 - **Never publish.** No `npm publish`, `npm version`, `bun publish`, `npm pack` into the repo,
-  `npm deprecate`, or editing `version` in `package.json`. Releases are cut by the release
-  workflow (`.github/workflows/release.yml`) after the owner merges.
+  `npm deprecate`, or editing `version` in `package.json`, `CHANGELOG.md` or
+  `.release-please-manifest.json`. release-please writes those three in its release pull request,
+  and the release workflow (`.github/workflows/release.yml`) publishes when the owner merges it
+  (ADR-0020).
 - **Don't stop for per-change review.** Once an ADR is approved, carry out *all* the work it
   covers, end to end. The owner reviews the finished set, not each step.
 - **Keep docs in the same change.** An implementation is incomplete until `AGENTS.md`, the
@@ -193,6 +195,9 @@ intent ([`maintainer-guide/release/versioning.mdx`](docs/docs.nepal-dev.com/cont
 | `fix:` | patch | Bug fix with no change beyond the bug |
 | `perf:` | patch | Faster, same output |
 | `docs:` `test:` `chore:` `ci:` `refactor:` | none | Docs, tests, tooling, CI, internal restructuring with identical output |
+
+release-please reads these prefixes to propose the next version and to write `CHANGELOG.md`
+(ADR-0020), so a wrong prefix proposes a wrong release.
 
 ## 6. Package invariants
 
@@ -324,6 +329,7 @@ full audit that runs before each release. Read it before a change touches any of
 ├── .github/               # issue forms, PR template, CODEOWNERS, FUNDING.yml, dependabot.yml;
 │                          # workflows/: ci.yml, release.yml, codeql.yml (ADR-0019)
 ├── package.json, tsconfig.json, tsdown.config.ts, bunfig.toml
+├── release-please-config.json, .release-please-manifest.json, .bun-version   # release and CI (ADR-0020)
 ├── dist/, coverage/       # generated, git-ignored, never edited
 └── sample/                # reference material from another project — not part of the package
 ```

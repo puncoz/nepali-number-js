@@ -115,7 +115,9 @@ The rest is in [`AGENTS.md`](AGENTS.md) §6 and §7, and in
 - GitHub Actions runs the three checks on Node.js 20, 22 and 24, packs and installs the package as
   a smoke test, and scans the code with CodeQL. The checks must pass before a merge.
 - **Dependency updates come from Dependabot**, once a week. Please don't send version bumps by hand.
-- The maintainer merges. A merge to `main` can start a release.
+- The maintainer merges. After a `fix:`, `feat:` or `perf:` commit reaches `main`, a bot opens a
+  release pull request with the next version and the changelog; the maintainer merges that to
+  publish. Please don't edit `version` in `package.json` or `CHANGELOG.md` yourself.
 
 ## Working with an AI agent
 

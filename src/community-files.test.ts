@@ -26,6 +26,8 @@ const REQUIRED_FILES = [
   ".github/PULL_REQUEST_TEMPLATE.md",
   ".github/dependabot.yml",
   ".github/workflows/codeql.yml",
+  ".github/workflows/ci.yml",
+  ".github/workflows/release.yml",
   `${FORMS_DIR}/${FORMS_CONFIG}`,
   `${FORMS_DIR}/bug.yml`,
   `${FORMS_DIR}/language.yml`,
